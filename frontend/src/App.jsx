@@ -3,13 +3,14 @@ import Sidebar from "./components/Sidebar";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import styles from './App.module.css';
 
 function App() {
   return (
     <Router>
-      <div className="flex h-screen bg-gray-900 text-white">
+      <div className={styles.app}>
         <Sidebar />
-        <div className="flex-1 flex flex-col">
+        <div className={styles.content}>
           <Routes>
             <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/login" element={<Login />} />

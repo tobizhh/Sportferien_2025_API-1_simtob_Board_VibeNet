@@ -1,6 +1,9 @@
+'use client';
+
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import styles from './Chat.module.css';
 
 function Chat() {
   const { serverId, channelId } = useParams();
@@ -13,10 +16,10 @@ function Chat() {
     const fetchMessages = async () => {
       try {
         const res = await axios.get(`http://localhost:5000/api/messages/${channelId}`);
-        setMessages(Array.isArray(res.data) ? res.data : []); // Sicherstellen, dass es ein Array ist
+        setMessages(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error("Fehler beim Laden der Nachrichten:", err.response ? err.response.data : err.message);
-        setMessages([]); // Falls Fehler, setze ein leeres Array
+        setMessages([]);
       }
     };
 
@@ -25,10 +28,10 @@ function Chat() {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return; // Keine leeren Nachrichten senden
+    if (!message.trim()) return;
   
     try {
-      const token = localStorage.getItem("token"); // Token aus LocalStorage abrufen
+      const token = localStorage.getItem("token");
   
       const res = await axios.post(
         "http://localhost:5000/api/messages",
@@ -36,7 +39,7 @@ function Chat() {
         {
           headers: { 
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` // Token senden
+            "Authorization": `Bearer ${token}`
           }
         }
       );
@@ -48,28 +51,30 @@ function Chat() {
       console.error("Fehler beim Senden der Nachricht:", err.response ? err.response.data : err.message);
     }
   };
-  
 
   return (
-    <div>
-      <h2>Chat</h2>
-      <div>
+    <div className={styles.chatContainer}>
+      <div className={styles.messageList}>
         {messages.length > 0 ? (
           messages.map((msg, index) => (
-            <p key={index}><b>{msg.author?.username || "Unbekannt"}:</b> {msg.content}</p>
+            <div key={index} className={styles.message}>
+              <span className={styles.author}>{msg.author?.username || "Unbekannt"}:</span>
+              <span className={styles.content}>{msg.content}</span>
+            </div>
           ))
         ) : (
-          <p>Keine Nachrichten vorhanden.</p>
+          <p className={styles.noMessages}>Keine Nachrichten vorhanden.</p>
         )}
       </div>
-      <form onSubmit={sendMessage}>
+      <form onSubmit={sendMessage} className={styles.messageForm}>
         <input 
           type="text" 
           value={message} 
           onChange={(e) => setMessage(e.target.value)} 
           placeholder="Nachricht eingeben..." 
+          className={styles.messageInput}
         />
-        <button type="submit">Senden</button>
+        <button type="submit" className={styles.sendButton}>Senden</button>
       </form>
     </div>
   );
