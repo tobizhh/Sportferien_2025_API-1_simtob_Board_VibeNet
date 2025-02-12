@@ -9,12 +9,18 @@ function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [enableTwoFactor, setEnableTwoFactor] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/register", { username, email, password });
+      await axios.post("http://localhost:5000/api/auth/register", { 
+        username, 
+        email, 
+        password,
+        enableTwoFactor
+      });
       navigate("/login");
     } catch (err) {
       console.error("Fehler beim Registrieren", err);
@@ -46,6 +52,14 @@ function Register() {
           placeholder="Password"
           className={styles.input}
         />
+        <label className={styles.checkboxLabel}>
+          <input 
+            type="checkbox" 
+            checked={enableTwoFactor} 
+            onChange={(e) => setEnableTwoFactor(e.target.checked)} 
+          />
+          Zwei-Faktor-Authentifizierung aktivieren
+        </label>
         <button type="submit" className={styles.button}>Registrieren</button>
       </form>
     </div>

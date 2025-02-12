@@ -1,0 +1,68 @@
+.accountContainer {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+}
+
+.accountContainer h2 {
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.profilePicture {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.profilePicture img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+
+.accountContainer form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.accountContainer input[type="text"],
+.accountContainer input[type="file"] {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #3a3a3a;
+  color: #ffffff;
+}
+
+.accountContainer button {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #4CAF50;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.accountContainer button:hover {
+  background-color: #45a049;
+}
+
+.twoFactor {
+  margin-top: 1rem;
+}
+
+.twoFactor label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ffffff;
+}
