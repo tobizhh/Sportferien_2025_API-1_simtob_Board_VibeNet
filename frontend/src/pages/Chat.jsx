@@ -144,3 +144,4 @@ function Chat() {
 }
 
 export default Chat;
+// Compare this snippet from frontend/src/pages/Chat.jsx:
