@@ -2,11 +2,21 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  width: 70%;
-  margin: 0 auto;
   background-color: #2a2a2a;
-  border-radius: 8px;
   overflow: hidden;
+}
+
+.chatHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #3a3a3a;
+}
+
+.accountLink {
+  color: #ffffff;
+  font-size: 1.5rem;
 }
 
 .messageList {
@@ -33,6 +43,12 @@
 
 .content {
   color: #ffffff;
+}
+
+.uploadedImage {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 4px;
 }
 
 .noMessages {
@@ -62,16 +78,17 @@
   box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5);
 }
 
-.sendButton {
-  padding: 0.5rem 1rem;
+.uploadLabel, .drawButton, .sendButton {
+  padding: 0.5rem;
   border: none;
   border-radius: 4px;
   background-color: #4CAF50;
   color: #ffffff;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-left: 0.5rem;
 }
 
-.sendButton:hover {
+.uploadLabel:hover, .drawButton:hover, .sendButton:hover {
   background-color: #45a049;
 }
