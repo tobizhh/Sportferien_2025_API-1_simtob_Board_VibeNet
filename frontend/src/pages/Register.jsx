@@ -1,6 +1,9 @@
+'use client';
+
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import styles from './Register.module.css';
 
 function Register() {
   const [username, setUsername] = useState("");
@@ -19,13 +22,31 @@ function Register() {
   };
 
   return (
-    <div>
-      <h2>Registrieren</h2>
-      <form onSubmit={handleRegister}>
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button type="submit">Registrieren</button>
+    <div className={styles.container}>
+      <form onSubmit={handleRegister} className={styles.form}>
+        <h2 className={styles.title}>Registrieren</h2>
+        <input 
+          type="text" 
+          value={username} 
+          onChange={(e) => setUsername(e.target.value)} 
+          placeholder="Username"
+          className={styles.input}
+        />
+        <input 
+          type="email" 
+          value={email} 
+          onChange={(e) => setEmail(e.target.value)} 
+          placeholder="Email"
+          className={styles.input}
+        />
+        <input 
+          type="password" 
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)} 
+          placeholder="Password"
+          className={styles.input}
+        />
+        <button type="submit" className={styles.button}>Registrieren</button>
       </form>
     </div>
   );

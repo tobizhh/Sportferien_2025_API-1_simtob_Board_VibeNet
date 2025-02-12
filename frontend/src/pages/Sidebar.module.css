@@ -1,0 +1,47 @@
+.sidebar {
+  width: 240px;
+  background-color: #2a2a2a;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.category {
+  margin-bottom: 2rem;
+}
+
+.categoryTitle {
+  color: #888888;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.serverLink {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.serverLink:hover {
+  background-color: #3a3a3a;
+}
+
+.serverIcon {
+  width: 32px;
+  height: 32px;
+  background-color: #4CAF50;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 0.5rem;
+  font-weight: bold;
+}
+
+.serverName {
+  font-size: 0.9rem;
+}
