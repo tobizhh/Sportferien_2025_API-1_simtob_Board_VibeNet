@@ -1,13 +1,20 @@
+html, body {
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #1a1a1a;
+  background-color: #2B2A2B;
 }
 
 .form {
-  background-color: #2a2a2a;
+  background-color: #2B2A2B;
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -27,13 +34,13 @@
 }
 
 .input {
-  width: 100%;
+  width: 92%;
   padding: 0.75rem;
   margin-bottom: 1rem;
   border: none;
   border-radius: 4px;
   background-color: #3a3a3a;
-  color: #ffffff;
+  color: #ff0000;
   transition: background-color 0.3s ease;
 }
 
@@ -56,4 +63,37 @@
 
 .button:hover {
   background-color: #45a049;
+}
+
+.mainTitle {
+  background-color: #3B3B3A; /* Example color */
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: #ffffff;
+  padding: 20px; /* Adds space inside instead of relying on margin */
+  margin: 0; /* Removes the unwanted margin */
+  width: 100%; /* Ensures it stretches across the full width */
+  display: block; /* Ensures it behaves as a full-width block */
+}
+
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers buttons horizontally */
+  width: 100%;
+  gap: 10px;
+}
+
+.registerButton {
+  width: 60%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #3a593b;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
