@@ -9,6 +9,9 @@ const channelRoutes = require("./routes/channels");
 const messageRoutes = require("./routes/messages");
 const authRoutes = require("./routes/auth");
 const friendsRoutes = require("./routes/friends");
+const path = require("path");
+require(path.resolve(__dirname, "../Middleware/authMiddleware"));
+
 
 
 const app = express();

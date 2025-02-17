@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
 import axios from "axios";
 import styles from "./Friends.module.css";
 
-const BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 function Friends({ userId }) {
   const [friends, setFriends] = useState([]);
@@ -20,28 +20,28 @@ function Friends({ userId }) {
 
   const fetchFriends = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/friends/${userId}`);
+      const res = await axios.get(`${API_BASE_URL}/friends/${userId}`);
       setFriends(res.data.friends);
     } catch (error) {
-      console.error("Error fetching friends:", error.response?.data || error.message);
+      console.error("❌ Error fetching friends:", error.response?.data || error.message);
     }
   };
 
   const fetchFriendRequests = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/friends/friend-requests/${userId}`);
+      const res = await axios.get(`${API_BASE_URL}/friends/friend-requests/${userId}`);
       setFriendRequests(res.data.requests);
     } catch (error) {
-      console.error("Error fetching friend requests:", error.response?.data || error.message);
+      console.error("❌ Error fetching friend requests:", error.response?.data || error.message);
     }
   };
 
   const handleSearchUser = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/users/search?username=${searchUser}`);
+      const res = await axios.get(`${API_BASE_URL}/users/search?username=${searchUser}`);
       setSelectedUser(res.data);
     } catch (error) {
-      alert("User not found");
+      alert("❌ User not found");
     }
   };
 
@@ -58,9 +58,7 @@ function Friends({ userId }) {
       {friendRequests.length > 0 ? (
         <ul>
           {friendRequests.map((req) => (
-            <li key={req._id}>
-              {req.username}
-            </li>
+            <li key={req._id}>{req.username}</li>
           ))}
         </ul>
       ) : (

@@ -13,7 +13,7 @@ function Chat() {
   useEffect(() => {
     const fetchChannelId = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/channels/name/${channelId}`);
+        const res = await axios.get(`${VITE_API_BASE_URL}/api/channels/name/${channelId}`);
         if (res.data._id) {
           console.log("✅ Found channel ID:", res.data._id);
           setChannelObjectId(res.data._id);

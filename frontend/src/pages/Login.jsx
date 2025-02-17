@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styles from './Login.module.css';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -15,7 +17,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", { 
+      const res = await axios.post(`${API_BASE_URL}/auth/login`, { 
         email: email.trim(), 
         password: password.trim() 
       }, {
@@ -26,17 +28,18 @@ function Login() {
         setShowTwoFactor(true);
       } else {
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("userId", res.data.userId);
         navigate("/chat/firstServer/general");
       }
     } catch (err) {
-      console.error("Fehler beim Login", err.response ? err.response.data : err.message);
+      console.error("❌ Fehler beim Login:", err.response?.data || err.message);
     }
   };
 
   const handleTwoFactor = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/two-factor", { 
+      const res = await axios.post(`${API_BASE_URL}/auth/two-factor`, { 
         email: email.trim(), 
         twoFactorCode: twoFactorCode.trim() 
       }, {
@@ -48,11 +51,10 @@ function Login() {
   
       navigate("/chat/firstServer/general"); // ✅ Redirect to chat
     } catch (err) {
-      console.error("Fehler bei der Zwei-Faktor-Authentifizierung", err.response?.data || err.message);
+      console.error("❌ Fehler bei der Zwei-Faktor-Authentifizierung:", err.response?.data || err.message);
       alert(err.response?.data?.message || "2FA verification failed. Try again.");
     }
   };
-  
 
   return (
     <div className={styles.pageWrapper}>
