@@ -1,0 +1,86 @@
+.container {
+  max-width: 500vw;
+  margin: auto;
+  padding: 15vw;
+  background: #1e1e1e;
+  border-radius: 10px;
+  color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+h2, h3 {
+  color: #17d4fe;
+  margin-bottom: 10px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #2c2c2c;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+button {
+  background: #17d4fe;
+  color: #1e1e1e;
+  border: none;
+  padding: 1.1vw 2vw;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #12a3c2;
+}
+
+.inputContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+input {
+  width: 60%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.inputContainer button {
+  margin-left: 10px;
+}
+
+.noRequests, .noFriends {
+  text-align: center;
+  color: gray;
+}
+
+.backButton {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 0.1vw 1vw;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+  display: block;
+  width: 20%;
+  margin: 10px 0;
+  text-align: center;
+}
+
+.backButton:hover {
+  background: #e84118;
+}

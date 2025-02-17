@@ -8,6 +8,8 @@ const serverRoutes = require("./routes/servers");
 const channelRoutes = require("./routes/channels");
 const messageRoutes = require("./routes/messages");
 const authRoutes = require("./routes/auth");
+const friendsRoutes = require("./routes/friends");
+
 
 const app = express();
 app.use(express.json());
@@ -25,6 +27,8 @@ app.use("/api/servers", serverRoutes);
 app.use("/api/channels", channelRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/friends", friendsRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("VibeChat Backend läuft 🚀");

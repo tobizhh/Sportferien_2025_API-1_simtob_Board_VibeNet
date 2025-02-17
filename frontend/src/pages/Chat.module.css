@@ -85,3 +85,39 @@
 .sendButton:hover {
   background-color: #0056b3;
 }
+
+.backButton {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  text-align: center;
+}
+
+.backButton:hover {
+  background: #e84118;
+}
+
+.friendsButton {
+  background-color: #5865f2;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  transition: background 0.3s ease;
+}
+
+.friendsButton:hover {
+  background-color: #4752c4;
+}

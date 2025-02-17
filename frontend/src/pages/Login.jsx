@@ -42,13 +42,17 @@ function Login() {
       }, {
         headers: { "Content-Type": "application/json" }
       });
-      
+  
       localStorage.setItem("token", res.data.token);
-      navigate("/chat/firstServer/general");
+      localStorage.setItem("userId", res.data.userId); // ✅ Store userId
+  
+      navigate("/chat/firstServer/general"); // ✅ Redirect to chat
     } catch (err) {
-      console.error("Fehler bei der Zwei-Faktor-Authentifizierung", err.response ? err.response.data : err.message);
+      console.error("Fehler bei der Zwei-Faktor-Authentifizierung", err.response?.data || err.message);
+      alert(err.response?.data?.message || "2FA verification failed. Try again.");
     }
   };
+  
 
   return (
     <div className={styles.pageWrapper}>

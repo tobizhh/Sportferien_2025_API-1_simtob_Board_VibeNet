@@ -7,6 +7,8 @@ const UserSchema = new mongoose.Schema({
   twoFactorEnabled: { type: Boolean, default: false },
   twoFactorCode: { type: String, default: null },
   twoFactorExpires: { type: Date, default: null },
-}, { timestamps: true });
+  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // List of friends
+  friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }] // Incoming requests
+});
 
 module.exports = mongoose.model("User", UserSchema);

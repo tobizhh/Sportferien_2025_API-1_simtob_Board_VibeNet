@@ -1,59 +1,98 @@
-"use client"
-
-import { useParams } from "react-router-dom"
-import { useState, useEffect } from "react"
-import axios from "axios"
-import styles from "./Chat.module.css"
+import { useParams, useNavigate } from "react-router-dom"; // 🔹 Import useNavigate
+import { useState, useEffect } from "react";
+import axios from "axios";
+import styles from "./Chat.module.css";
 
 function Chat() {
-  const { channelId } = useParams()
-  const [messages, setMessages] = useState([])
-  const [newMessage, setNewMessage] = useState("")
+  const { channelId } = useParams();
+  const navigate = useNavigate(); // 🔹 Hook for navigation
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [channelObjectId, setChannelObjectId] = useState(null);
+
+  useEffect(() => {
+    const fetchChannelId = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/channels/name/${channelId}`);
+        if (res.data._id) {
+          console.log("✅ Found channel ID:", res.data._id);
+          setChannelObjectId(res.data._id);
+        } else {
+          console.error("⚠️ Channel not found!");
+        }
+      } catch (error) {
+        console.error("❌ Error fetching channel ID:", error);
+      }
+    };
+  
+    if (channelId.length !== 24) { 
+      fetchChannelId();
+    } else {
+      setChannelObjectId(channelId);
+    }
+  }, [channelId]);
+  
 
   useEffect(() => {
     const fetchMessages = async () => {
-      try {
-        const token = localStorage.getItem("token")
-        const res = await axios.get(`http://localhost:5000/api/messages/${channelId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        setMessages(res.data)
-      } catch (err) {
-        console.error("Error fetching messages:", err)
+      if (!channelObjectId) {
+        console.error("⚠️ channelObjectId is undefined!");
+        return;
       }
-    }
-
-    if (channelId) {
-      fetchMessages()
-    }
-  }, [channelId])
-
+      
+      console.log(`🔍 Fetching messages for channel: ${channelObjectId}`);
+      
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`http://localhost:5000/api/messages/${channelObjectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setMessages(res.data);
+      } catch (err) {
+        console.error("❌ Error fetching messages:", err.response?.data || err.message);
+      }
+    };
+  
+    fetchMessages();
+  }, [channelObjectId]);
+  
   const handleSendMessage = async (e) => {
-    e.preventDefault()
-    if (!newMessage.trim()) return
+    e.preventDefault();
+    if (!newMessage.trim() || !channelObjectId) return;
 
     try {
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.error("User ID is missing!");
+        return;
+      }
+
       const res = await axios.post(
         "http://localhost:5000/api/messages",
-        { content: newMessage, channel: channelId },
+        { content: newMessage, channel: channelObjectId, author: userId },
         {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        },
-      )
-      setMessages((prevMessages) => [...prevMessages, res.data.messageData])
-      setNewMessage("")
+        }
+      );
+
+      setMessages((prevMessages) => [...prevMessages, res.data.messageData]);
+      setNewMessage("");
     } catch (err) {
-      console.error("Error sending message:", err)
+      console.error("Error sending message:", err);
     }
-  }
+  };
 
   return (
     <div className={styles.chatContainer}>
       <div className={styles.chatContent}>
+        <button className={styles.friendsButton} onClick={() => navigate("/friends")}>
+          👥 Friends
+        </button>
+        
         <div className={styles.messageList}>
           {messages.length > 0 ? (
             messages.map((msg, index) => (
@@ -66,6 +105,7 @@ function Chat() {
             <p className={styles.noMessages}>No messages yet.</p>
           )}
         </div>
+
         <div className={styles.inputContainer}>
           <form onSubmit={handleSendMessage} className={styles.inputForm}>
             <input
@@ -82,7 +122,7 @@ function Chat() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Chat
+export default Chat;
