@@ -1,60 +1,55 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Message = require("../models/Message");
-const Channel = require("../models/Channel");
-const requireAuth = require("../middleware/authMiddleware");
-
 const router = express.Router();
+const Message = require("../models/Message");
 
+// ✅ GET messages for a specific channel
 router.get("/:channelId", async (req, res) => {
   try {
     const { channelId } = req.params;
-    
-    // Falls der Parameter keine ObjectId ist, suche per Name
-    const channel = mongoose.Types.ObjectId.isValid(channelId)
-      ? await Channel.findById(channelId)
-      : await Channel.findOne({ name: channelId });
+    console.log("🔍 Received request for channel ID:", channelId);
 
-    if (!channel) return res.status(404).json({ message: "Channel nicht gefunden" });
+    if (!mongoose.Types.ObjectId.isValid(channelId)) {
+      return res.status(400).json({ message: "Invalid channel ID format" });
+    }
 
-    const messages = await Message.find({ channel: channel._id }).populate("author", "username");
+    const messages = await Message.find({ channel: channelId }).populate("author");
+    if (!messages) {
+      return res.status(404).json({ message: "No messages found" });
+    }
+
     res.json(messages);
-  } catch (err) {
-    res.status(500).json({ message: "Fehler beim Abrufen der Nachrichten", error: err.message });
+  } catch (error) {
+    console.error("❌ Error fetching messages:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-router.post("/", requireAuth, async (req, res) => {
+
+
+router.post("/", async (req, res) => {
   try {
-    const { content, channel } = req.body;
-    if (!content || !channel) {
-      return res.status(400).json({ message: "Nachricht und Channel erforderlich" });
-    }
+    const { content, channel, author } = req.body;
 
-    if (!req.user || !req.user._id) {
-      return res.status(401).json({ message: "Nicht autorisiert" });
-    }
-
-    // Channel abrufen
-    const channelDoc = mongoose.Types.ObjectId.isValid(channel)
-      ? await Channel.findById(channel)
-      : await Channel.findOne({ name: channel });
-
-    if (!channelDoc) {
-      return res.status(404).json({ message: "Channel nicht gefunden" });
+    if (!content || !channel || !author) {
+      return res.status(400).json({ message: "Content, channel, and author are required" });
     }
 
     const newMessage = new Message({
       content,
-      channel: channelDoc._id,
-      author: req.user._id, // Sicherstellen, dass `req.user._id` existiert
+      channel,
+      author, // 🔥 Autor speichern!
     });
 
     await newMessage.save();
-    res.status(201).json({ messageData: newMessage });
+    res.status(201).json({ message: "Message sent", messageData: newMessage });
   } catch (error) {
-    res.status(500).json({ message: "Fehler beim Erstellen der Nachricht", error: error.message });
+    console.error("Error saving message:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+
+
 
 module.exports = router;

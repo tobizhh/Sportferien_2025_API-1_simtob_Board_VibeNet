@@ -65,20 +65,37 @@ router.post("/two-factor", async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user || user.twoFactorCode !== twoFactorCode || Date.now() > user.twoFactorExpires) {
-      return res.status(400).json({ message: "Invalid or expired 2FA code" });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
+    if (!user.twoFactorCode || !user.twoFactorExpires) {
+      return res.status(400).json({ message: "2FA code not requested or expired" });
+    }
+
+    if (Date.now() > user.twoFactorExpires) {
+      return res.status(400).json({ message: "2FA code expired. Request a new one." });
+    }
+
+    if (user.twoFactorCode !== twoFactorCode) {
+      return res.status(400).json({ message: "Invalid 2FA code" });
+    }
+
+    // ✅ Clear the 2FA code after successful verification
     user.twoFactorCode = null;
     user.twoFactorExpires = null;
     await user.save();
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.json({ token });
+
+    res.json({ token, userId: user._id, message: "2FA verification successful" });
   } catch (error) {
-    res.status(500).json({ message: "Error verifying 2FA", error });
+    console.error("Error verifying 2FA:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 // Login mit 2FA-Unterstützung
 router.post("/login", async (req, res) => {
@@ -110,5 +127,67 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Interner Serverfehler" });
   }
 });
+
+// Send Friend Request
+router.post("/friends/request", async (req, res) => {
+  try {
+    const { senderId, receiverId } = req.body;
+    const receiver = await User.findById(receiverId);
+    
+    if (!receiver) return res.status(404).json({ message: "User not found" });
+
+    if (receiver.friendRequests.includes(senderId) || receiver.friends.includes(senderId)) {
+      return res.status(400).json({ message: "Friend request already sent or user is already a friend" });
+    }
+
+    receiver.friendRequests.push(senderId);
+    await receiver.save();
+    res.json({ message: "Friend request sent" });
+  } catch (error) {
+    console.error("Error sending friend request:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Accept Friend Request
+router.post("/friends/accept", async (req, res) => {
+  try {
+    const { userId, senderId } = req.body;
+    const user = await User.findById(userId);
+    const sender = await User.findById(senderId);
+
+    if (!user || !sender) return res.status(404).json({ message: "User not found" });
+
+    if (!user.friendRequests.includes(senderId)) {
+      return res.status(400).json({ message: "No friend request found" });
+    }
+
+    user.friendRequests = user.friendRequests.filter(id => id.toString() !== senderId);
+    user.friends.push(senderId);
+    sender.friends.push(userId);
+
+    await user.save();
+    await sender.save();
+
+    res.json({ message: "Friend request accepted" });
+  } catch (error) {
+    console.error("Error accepting friend request:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Get Friends List
+router.get("/friends/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).populate("friends", "username email");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({ friends: user.friends });
+  } catch (error) {
+    console.error("Error fetching friends list:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 
 module.exports = router;

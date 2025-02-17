@@ -43,4 +43,23 @@ router.post("/", async (req, res) => {
   }
 });
 
+
+// ✅ GET Channel ObjectId by Name
+router.get("/name/:channelName", async (req, res) => {
+  try {
+    const channel = await Channel.findOne({ name: req.params.channelName });
+
+    if (!channel) {
+      return res.status(404).json({ message: "Channel not found" });
+    }
+
+    res.json({ _id: channel._id });
+  } catch (error) {
+    console.error("Error fetching channel ID:", error);
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+});
+
+
+
 module.exports = router;
