@@ -1,147 +1,88 @@
-'use client';
+"use client"
 
-import { useParams, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import axios from "axios";
-import styles from './Chat.module.css';
-import { FaUser } from "react-icons/fa";
-import DrawPad from '../pages/DrawPad';
-import { FaImage } from "react-icons/fa6";
-import { FaPencilAlt } from "react-icons/fa";
-
-
-
+import { useParams } from "react-router-dom"
+import { useState, useEffect } from "react"
+import axios from "axios"
+import styles from "./Chat.module.css"
 
 function Chat() {
-  const { serverId, channelId } = useParams();
-  const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState("");
-  const [channelName, setChannelName] = useState("");
-  const [showDrawPad, setShowDrawPad] = useState(false);
+  const { channelId } = useParams()
+  const [messages, setMessages] = useState([])
+  const [newMessage, setNewMessage] = useState("")
 
   useEffect(() => {
-    if (!channelId) return;
-
     const fetchMessages = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/messages/${channelId}`);
-        setMessages(Array.isArray(res.data) ? res.data : []);
-        // Fetch channel name
-        const channelRes = await axios.get(`http://localhost:5000/api/channels/${channelId}`);
-        setChannelName(channelRes.data.name);
+        const token = localStorage.getItem("token")
+        const res = await axios.get(`http://localhost:5000/api/messages/${channelId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        setMessages(res.data)
       } catch (err) {
-        console.error("Fehler beim Laden der Nachrichten:", err.response ? err.response.data : err.message);
-        setMessages([]);
+        console.error("Error fetching messages:", err)
       }
-    };
+    }
 
-    fetchMessages();
-  }, [channelId]);
+    if (channelId) {
+      fetchMessages()
+    }
+  }, [channelId])
 
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    if (!message.trim()) return;
-  
+  const handleSendMessage = async (e) => {
+    e.preventDefault()
+    if (!newMessage.trim()) return
+
     try {
-      const token = localStorage.getItem("token");
-  
+      const token = localStorage.getItem("token")
       const res = await axios.post(
         "http://localhost:5000/api/messages",
-        { content: message, channel: channelId },
+        { content: newMessage, channel: channelId },
         {
-          headers: { 
+          headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          }
-        }
-      );
-  
-      setMessages((prevMessages) => [...prevMessages, res.data.messageData]);
-      setMessage("");
-  
+          },
+        },
+      )
+      setMessages((prevMessages) => [...prevMessages, res.data.messageData])
+      setNewMessage("")
     } catch (err) {
-      console.error("Fehler beim Senden der Nachricht:", err.response ? err.response.data : err.message);
+      console.error("Error sending message:", err)
     }
-  };
-
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('image', file);
-
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.post(
-        "http://localhost:5000/api/messages/image",
-        formData,
-        {
-          headers: { 
-            "Content-Type": "multipart/form-data",
-            "Authorization": `Bearer ${token}`
-          }
-        }
-      );
-      setMessages((prevMessages) => [...prevMessages, res.data.messageData]);
-    } catch (err) {
-      console.error("Fehler beim Hochladen des Bildes:", err);
-    }
-  };
-
-  const handleDrawingSend = (drawingData) => {
-    // Implement sending drawing data to the server
-    console.log("Sending drawing:", drawingData);
-    setShowDrawPad(false);
-  };
+  }
 
   return (
     <div className={styles.chatContainer}>
-      <div className={styles.chatHeader}>
-        <h2>{channelName}</h2>
-        <Link to="/account" className={styles.accountLink}>
-          <FaUser />
-        </Link>
-      </div>
-      <div className={styles.messageList}>
-        {messages.length > 0 ? (
-          messages.map((msg, index) => (
-            <div key={index} className={styles.message}>
-              <span className={styles.author}>{msg.author?.username || "Unbekannt"}:</span>
-              {msg.content ? (
+      <div className={styles.chatContent}>
+        <div className={styles.messageList}>
+          {messages.length > 0 ? (
+            messages.map((msg, index) => (
+              <div key={index} className={styles.message}>
+                <span className={styles.author}>{msg.author?.username || "Unknown"}:</span>
                 <span className={styles.content}>{msg.content}</span>
-              ) : msg.image ? (
-                <img src={msg.image || "/placeholder.svg"} alt="Uploaded content" className={styles.uploadedImage} />
-              ) : null}
-            </div>
-          ))
-        ) : (
-          <p className={styles.noMessages}>Keine Nachrichten vorhanden.</p>
-        )}
+              </div>
+            ))
+          ) : (
+            <p className={styles.noMessages}>No messages yet.</p>
+          )}
+        </div>
+        <div className={styles.inputContainer}>
+          <form onSubmit={handleSendMessage} className={styles.inputForm}>
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type your message..."
+              className={styles.inputField}
+            />
+            <button type="submit" className={styles.sendButton}>
+              Send
+            </button>
+          </form>
+        </div>
       </div>
-      <form onSubmit={sendMessage} className={styles.messageForm}>
-        <input 
-          type="text" 
-          value={message} 
-          onChange={(e) => setMessage(e.target.value)} 
-          placeholder="Nachricht eingeben..." 
-          className={styles.messageInput}
-        />
-        <label className={styles.uploadLabel}>
-          <FaImage />
-          <input type="file" onChange={handleImageUpload} accept="image/*" style={{display: 'none'}} />
-        </label>
-        <button type="button" onClick={() => setShowDrawPad(true)} className={styles.drawButton}>
-          <FaPencilAlt />
-        </button>
-        <button type="submit" className={styles.sendButton}>Senden</button>
-      </form>
-      {showDrawPad && (
-        <DrawPad onSend={handleDrawingSend} onClose={() => setShowDrawPad(false)} />
-      )}
     </div>
-  );
+  )
 }
 
-export default Chat;
-// Compare this snippet from frontend/src/pages/Chat.jsx:
+export default Chat

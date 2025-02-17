@@ -27,7 +27,7 @@
 }
 
 .input {
-  width: 100%;
+  width: 92%;
   padding: 0.75rem;
   margin-bottom: 1rem;
   border: none;
@@ -56,4 +56,51 @@
 
 .button:hover {
   background-color: #45a049;
+}
+
+/* Center the entire label */
+.checkboxContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px; /* Adjust as needed */
+}
+
+/* Improve label styling */
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between checkbox and text */
+  font-size: 16px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+/* Hide default checkbox */
+.customCheckbox {
+  appearance: none; /* Removes default styles */
+  width: 20px;
+  height: 20px;
+  border: 2px solid #007bff;
+  border-radius: 4px;
+  background-color: transparent;
+  position: relative;
+  cursor: pointer;
+}
+
+/* Custom checkbox check effect */
+.customCheckbox:checked {
+  background-color: #007bff;
+  border-color: #0056b3;
+}
+
+/* Checkmark inside checkbox */
+.customCheckbox:checked::after {
+  content: '✔';
+  color: white;
+  font-size: 14px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }

@@ -51,41 +51,54 @@ function Login() {
   };
 
   return (
-    <div className={styles.container}>
-      {!showTwoFactor ? (
-        <form onSubmit={handleLogin} className={styles.form}>
-          <h2 className={styles.title}>Login</h2>
-          <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            placeholder="Email"
-            className={styles.input}
-          />
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            placeholder="Password"
-            className={styles.input}
-          />
-          <button type="submit" className={styles.button}>Login</button>
-        </form>
-      ) : (
-        <form onSubmit={handleTwoFactor} className={styles.form}>
-          <h2 className={styles.title}>Zwei-Faktor-Authentifizierung</h2>
-          <input 
-            type="text" 
-            value={twoFactorCode} 
-            onChange={(e) => setTwoFactorCode(e.target.value)} 
-            placeholder="Zwei-Faktor-Code"
-            className={styles.input}
-          />
-          <button type="submit" className={styles.button}>Bestätigen</button>
-        </form>
-      )}
+    <div className={styles.pageWrapper}>
+      <h1 className={styles.mainTitle}>Welcome to VibeChat</h1>
+      <div className={styles.container}>
+        {!showTwoFactor ? (
+          <form onSubmit={handleLogin} className={styles.form}>
+            <h2 className={styles.title}>Login</h2>
+            <input 
+              type="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              placeholder="Email"
+              className={styles.input}
+            />
+            <input 
+              type="password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              placeholder="Password"
+              className={styles.input}
+            />
+            <div className={styles.buttonContainer}>
+              <button type="submit" className={styles.button}>Login</button>
+              <button type="button" className={styles.registerButton} onClick={() => navigate("/register")}>
+                No account yet?
+              </button>
+            </div>
+          </form>
+        ) : (
+          <form onSubmit={handleTwoFactor} className={styles.form}>
+            <h2 className={styles.title}>Zwei-Faktor-Authentifizierung</h2>
+            <input 
+              type="text" 
+              value={twoFactorCode} 
+              onChange={(e) => setTwoFactorCode(e.target.value)} 
+              placeholder="Zwei-Faktor-Code"
+              className={styles.input}
+            />
+            <div className={styles.buttonContainer}>
+              <button type="submit" className={styles.button}>Bestätigen</button>
+              <button type="button" className={styles.registerButton} onClick={() => navigate("/register")}>
+                No account yet?
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
-}
+};
 
 export default Login;
