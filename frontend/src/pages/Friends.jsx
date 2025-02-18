@@ -20,7 +20,7 @@ function Friends({ userId }) {
 
   const fetchFriends = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/friends/${userId}`);
+      const res = await axios.get(`https://sportferien-2025-api-1-simtob-board.onrender.com/friends/${userId}`);
       setFriends(res.data.friends);
     } catch (error) {
       console.error("❌ Error fetching friends:", error.response?.data || error.message);
@@ -29,7 +29,7 @@ function Friends({ userId }) {
 
   const fetchFriendRequests = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/friends/friend-requests/${userId}`);
+      const res = await axios.get(`https://sportferien-2025-api-1-simtob-board.onrender.com/friends/friend-requests/${userId}`);
       setFriendRequests(res.data.requests);
     } catch (error) {
       console.error("❌ Error fetching friend requests:", error.response?.data || error.message);
@@ -38,7 +38,7 @@ function Friends({ userId }) {
 
   const handleSearchUser = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/users/search?username=${searchUser}`);
+      const res = await axios.get(`https://sportferien-2025-api-1-simtob-board.onrender.com/users/search?username=${searchUser}`);
       setSelectedUser(res.data);
     } catch (error) {
       alert("❌ User not found");
