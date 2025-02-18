@@ -18,7 +18,7 @@ const path = require("path");
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: '*', // Erlaubt alle Domains, für mehr Sicherheit spezifische Domains angeben
+  origin: '*', 
   methods: 'GET,POST,PUT,DELETE,OPTIONS',
   allowedHeaders: 'Content-Type,Authorization'
 }));
