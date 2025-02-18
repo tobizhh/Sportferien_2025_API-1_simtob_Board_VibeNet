@@ -5,7 +5,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styles from './Login.module.css';
 
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://vibechat-4i7uyyao7-sdfas-projects-3138fa8b.vercel.app:1000/api";
+
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -17,7 +19,9 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+
       const res = await axios.post(`https://vibechat-4i7uyyao7-sdfas-projects-3138fa8b.vercel.app:1000/auth/login`, { 
+
         email: email.trim(), 
         password: password.trim() 
       }, {
@@ -39,7 +43,9 @@ function Login() {
   const handleTwoFactor = async (e) => {
     e.preventDefault();
     try {
+
       const res = await axios.post(`https://vibechat-4i7uyyao7-sdfas-projects-3138fa8b.vercel.app:1000/auth/two-factor`, { 
+
         email: email.trim(), 
         twoFactorCode: twoFactorCode.trim() 
       }, {
