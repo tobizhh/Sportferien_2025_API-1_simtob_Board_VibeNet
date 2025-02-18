@@ -15,7 +15,7 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/register", { 
+      await axios.post("https://sportferien-2025-api-1-simtob-board.onrender.com/api/auth/register", { 
         username: username.trim(), 
         email: email.trim(), 
         password: password.trim(),
