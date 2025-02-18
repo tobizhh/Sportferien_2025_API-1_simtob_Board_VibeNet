@@ -5,7 +5,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styles from './Login.module.css';
 
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sportferien-2025-api-1-simtob-board.onrender.com/api";
+
+
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -17,7 +20,9 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+
       const res = await axios.post(`https://sportferien-2025-api-1-simtob-board.onrender.com/auth/login`, { 
+
         email: email.trim(), 
         password: password.trim() 
       }, {
@@ -39,7 +44,9 @@ function Login() {
   const handleTwoFactor = async (e) => {
     e.preventDefault();
     try {
+
       const res = await axios.post(`https://sportferien-2025-api-1-simtob-board.onrender.com/auth/two-factor`, { 
+
         email: email.trim(), 
         twoFactorCode: twoFactorCode.trim() 
       }, {

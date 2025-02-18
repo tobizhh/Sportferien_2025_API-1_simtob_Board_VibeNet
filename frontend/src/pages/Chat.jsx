@@ -13,7 +13,9 @@ function Chat() {
   useEffect(() => {
     const fetchChannelId = async () => {
       try {
+
         const res = await axios.get(`https://sportferien-2025-api-1-simtob-board.onrender.com/api/channels/name/${channelId}`);
+
         if (res.data._id) {
           console.log("✅ Found channel ID:", res.data._id);
           setChannelObjectId(res.data._id);
@@ -44,7 +46,9 @@ function Chat() {
       
       try {
         const token = localStorage.getItem("token");
+
         const res = await axios.get(`https://sportferien-2025-api-1-simtob-board.onrender.com/api/messages/channel/${channelObjectId}`, {
+
           headers: { Authorization: `Bearer ${token}` },
         });
         setMessages(res.data);
@@ -69,7 +73,9 @@ function Chat() {
       }
 
       const res = await axios.post(
+
         "https://https://sportferien-2025-api-1-simtob-board.onrender.com/api/messages",
+
         { content: newMessage, channel: channelObjectId, author: userId },
         {
           headers: {
