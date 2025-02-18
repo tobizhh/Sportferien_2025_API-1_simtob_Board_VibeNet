@@ -45,6 +45,28 @@ router.get("/me", requireAuth, async (req, res) => {
   }
 });
 
+router.get("/search", async (req, res) => {
+  try {
+      const { username } = req.query;
+
+      if (!username) {
+          return res.status(400).json({ message: "⚠️ Kein Benutzername angegeben" });
+      }
+
+      // Suche Benutzer, die dem eingegebenen Namen entsprechen
+      const users = await User.find({ username: { $regex: new RegExp(username, "i") } });
+
+      if (users.length === 0) {
+          return res.status(404).json({ message: "❌ Kein Benutzer gefunden" });
+      }
+
+      res.json(users);
+  } catch (error) {
+      console.error("❌ Fehler bei der Benutzersuche:", error);
+      res.status(500).json({ message: "Serverfehler" });
+  }
+});
+
 /**
  * @swagger
  * /users:

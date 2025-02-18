@@ -44,7 +44,7 @@ function Chat() {
       
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:5000/api/messages/${channelObjectId}`, {
+        const res = await axios.get(`http://localhost:5000/api/messages/channel/${channelObjectId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setMessages(res.data);
@@ -79,7 +79,7 @@ function Chat() {
         }
       );
 
-      setMessages((prevMessages) => [...prevMessages, res.data.messageData]);
+      setMessages((prevMessages) => [...prevMessages, res.data]);
       setNewMessage("");
     } catch (err) {
       console.error("Error sending message:", err);
