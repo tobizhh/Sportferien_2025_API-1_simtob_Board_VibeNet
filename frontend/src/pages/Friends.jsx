@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
 import axios from "axios";
 import styles from "./Friends.module.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://vibechat-4i7uyyao7-sdfas-projects-3138fa8b.vercel.app/api";
 
 function Friends({ userId }) {
   const [friends, setFriends] = useState([]);
@@ -20,7 +20,8 @@ function Friends({ userId }) {
 
   const fetchFriends = async () => {
     try {
-      const res = await axios.get(`https://sportferien-2025-api-1-simtob-board.onrender.com/friends/${userId}`);
+const res = await axios.get(`https://vibechat-4i7uyyao7-sdfas-projects-3138fa8b.vercel.app/friends/${userId}`);
+
       setFriends(res.data.friends);
     } catch (error) {
       console.error("❌ Error fetching friends:", error.response?.data || error.message);
@@ -29,7 +30,9 @@ function Friends({ userId }) {
 
   const fetchFriendRequests = async () => {
     try {
-      const res = await axios.get(`https://sportferien-2025-api-1-simtob-board.onrender.com/friends/friend-requests/${userId}`);
+
+      const res = await axios.get(`https://vibechat-4i7uyyao7-sdfas-projects-3138fa8b.vercel.app/friends/friend-requests/${userId}`);
+
       setFriendRequests(res.data.requests);
     } catch (error) {
       console.error("❌ Error fetching friend requests:", error.response?.data || error.message);
@@ -38,7 +41,9 @@ function Friends({ userId }) {
 
   const handleSearchUser = async () => {
     try {
-      const res = await axios.get(`https://sportferien-2025-api-1-simtob-board.onrender.com/users/search?username=${searchUser}`);
+
+      const res = await axios.get(`https://vibechat-4i7uyyao7-sdfas-projects-3138fa8b.vercel.app/users/search?username=${searchUser}`);
+
       setSelectedUser(res.data);
     } catch (error) {
       alert("❌ User not found");
