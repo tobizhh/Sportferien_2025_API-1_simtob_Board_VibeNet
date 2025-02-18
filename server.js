@@ -41,7 +41,7 @@ const swaggerOptions = {
       version: "1.0.0",
       description: "API-Dokumentation für VibeChat",
     },
-    servers: [{ url: "http://localhost:5000" }],
+    servers: [{ url: "http://localhost:10000" }],
   },
   apis: ["./routes/*.js"], // ⬅️ Pfad zu deinen API-Routen (anpassen, falls nötig)
 };
@@ -53,5 +53,5 @@ app.get("/", (req, res) => {
   res.send("VibeChat Backend läuft 🚀");
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log("🌍 Server läuft auf Port ${PORT}"));
