@@ -59,4 +59,30 @@ router.post("/", async (req, res) => {
   }
 });
 
+
+router.get("/channel/:channelId", async (req, res) => {
+  try {
+      const { channelId } = req.params;
+      console.log("🔍 Abrufen der Nachrichten für Channel:", channelId);
+
+      if (!channelId) {
+          return res.status(400).json({ message: "⚠️ Channel-ID fehlt" });
+      }
+
+      const messages = await Message.find({ channel: channelId }).populate("author", "username");
+
+      if (!messages.length) {
+          return res.status(404).json({ message: "❌ Keine Nachrichten gefunden" });
+      }
+
+      res.json(messages);
+  } catch (error) {
+      console.error("❌ Fehler beim Abrufen der Nachrichten:", error);
+      res.status(500).json({ message: "Serverfehler" });
+  }
+});
+
+
+
+
 module.exports = router;
