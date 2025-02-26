@@ -1,3 +1,12 @@
+/**
+ * @ Author: Tobias Simon
+ * @ Date: 26.02.2025
+ * @ Description: 
+ * VibeNet ist eine Echtzeit-Chat-Anwendung mit Benutzerregistrierung, 
+ * Authentifizierung und Freundesverwaltung. Nachrichten werden über 
+ * WebSockets (Socket.io) in Echtzeit ausgetauscht und in einer MongoDB 
+ * Datenbank gespeichert.
+ */
 const mongoose = require("mongoose");
 require("dotenv").config();
 
