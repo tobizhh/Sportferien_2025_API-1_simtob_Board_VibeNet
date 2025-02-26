@@ -82,7 +82,7 @@ router.post("/two-factor", async (req, res) => {
       return res.status(400).json({ message: "Invalid 2FA code" });
     }
 
-    // ✅ Clear the 2FA code after successful verification
+    // clear 2fa after succesfull verification
     user.twoFactorCode = null;
     user.twoFactorExpires = null;
     await user.save();
@@ -97,7 +97,7 @@ router.post("/two-factor", async (req, res) => {
 });
 
 
-// Login mit 2FA-Unterstützung
+// login with 2fa
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -108,18 +108,18 @@ router.post("/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Falsches Passwort" });
 
-    // Falls 2FA aktiviert ist, generiere und sende den Code per Mail
+    // if 2fa generate code per mail
     if (user.twoFactorEnabled) {
       const code = generateCode();
       user.twoFactorCode = code;
-      user.twoFactorExpires = Date.now() + 300000; // 5 Min gültig
+      user.twoFactorExpires = Date.now() + 300000; //code is valid 5min
       await user.save();
 
       await sendEmail(user.email, "Ihr 2FA-Code", `Ihr 2FA-Code lautet: ${code}`);
       return res.json({ requireTwoFactor: true });
     }
 
-    // Falls 2FA nicht aktiviert ist, erzeuge direkt ein Token
+    // no 2fa --> token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
     res.json({ token });
   } catch (error) {
@@ -149,7 +149,7 @@ router.post("/friends/request", async (req, res) => {
   }
 });
 
-// Accept Friend Request
+// Accept Friend Request (broken)
 router.post("/friends/accept", async (req, res) => {
   try {
     const { userId, senderId } = req.body;
@@ -176,7 +176,7 @@ router.post("/friends/accept", async (req, res) => {
   }
 });
 
-// Get Friends List
+// Get Friends List (broken)
 router.get("/friends/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId).populate("friends", "username email");
