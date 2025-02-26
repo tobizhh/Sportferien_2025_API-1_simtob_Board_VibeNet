@@ -12,7 +12,7 @@ function Chat() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
-  // ✅ Redirect if Not Logged In
+  // check login
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -20,7 +20,7 @@ function Chat() {
     }
   }, [navigate]);
 
-  // ✅ Fetch Messages on Load (Sorted)
+  // get messages
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -34,7 +34,7 @@ function Chat() {
   
         console.log("✅ Messages fetched:", res.data);
   
-        // ✅ Fix: Sort messages to display oldest first
+        // sort messages
         const uniqueMessages = Array.from(new Map(res.data.map((msg) => [msg._id, msg])).values())
           .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
   
@@ -46,15 +46,8 @@ function Chat() {
   
     fetchMessages();
   }, []);
-  
-  
-  
-  
-  
-  
-  
 
-  // ✅ Listen for Real-Time Messages
+  // listen for messages
   useEffect(() => {
     socket.connect();
   
@@ -66,7 +59,7 @@ function Chat() {
   
         if (seenIDs.has(message._id)) {
           console.warn("⚠️ Duplicate received from Socket.io:", message);
-          return prevMessages; // ✅ Ignore duplicates
+          return prevMessages;
         }
   
         console.log("✅ Adding new message:", message);
@@ -79,11 +72,8 @@ function Chat() {
       socket.disconnect();
     };
   }, []);
-  
-  
-  
 
-  // ✅ Send Message
+  // send message
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -98,7 +88,7 @@ function Chat() {
         }
       );
   
-      // ✅ Fix: Only send `content` and `author` to avoid duplicate `_id` errors
+      // send via socket
       socket.emit("sendMessage", { content: res.data.content, author: res.data.author });
   
       setNewMessage("");
