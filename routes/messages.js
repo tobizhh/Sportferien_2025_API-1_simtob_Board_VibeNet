@@ -3,7 +3,7 @@ const router = express.Router()
 const Message = require("../models/Message")
 const requireAuth = require("../middleware/authMiddleware")
 
-// GET all messages
+// gets all messages of the db, need auth, get sorted, shown with username
 router.get("/", requireAuth, async (req, res) => {
   try {
     console.log("📥 Fetching all messages...") // Debugging log
@@ -17,13 +17,13 @@ router.get("/", requireAuth, async (req, res) => {
   }
 })
 
-// POST a new message
+// saves message and sends to all users
 router.post("/", requireAuth, async (req, res) => {
   try {
     const { content } = req.body
     if (!content) return res.status(400).json({ message: "Message content is required" })
 
-    console.log("🔍 req.user:", req.user) // Debugging: Check if user ID is present
+    console.log("🔍 req.user:", req.user) // debug: Check if user ID is present
     if (!req.user || !req.user.userId) {
       return res.status(401).json({ message: "User not authenticated" })
     }
@@ -36,10 +36,10 @@ router.post("/", requireAuth, async (req, res) => {
     await newMessage.save()
     console.log("✅ Message saved:", newMessage)
 
-    // Populate author information before sending the response
+   
     await newMessage.populate("author", "username")
 
-    // Emit the new message via Socket.io
+    // send the new message via Socket.io
     const io = req.app.get("io")
     if (io) {
       io.emit("newMessage", newMessage)
