@@ -4,8 +4,10 @@ const requireAuth = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+//route to get own data (broken atm)
 router.get("/me", requireAuth, async (req, res) => {
   try {
+//searches for logged in users, doesnt give back pw
     const user = await User.findById(req.user._id, { password: 0 });
     if (!user) {
       return res.status(404).json({ message: "Benutzer nicht gefunden" });
