@@ -9,7 +9,7 @@ function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [enableTwoFactor, setEnableTwoFactor] = useState(false); // 2FA Zustand
+  const [enableTwoFactor, setEnableTwoFactor] = useState(false); // 2fa state
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -19,7 +19,7 @@ function Register() {
         username: username.trim(), 
         email: email.trim(), 
         password: password.trim(),
-        enableTwoFactor: enableTwoFactor // 2FA Wert wird korrekt gesendet
+        enableTwoFactor: enableTwoFactor // 2fa gets send correctly
       });
 
       alert("Registrierung erfolgreich!");
@@ -72,8 +72,8 @@ function Register() {
             <input 
               type="checkbox" 
               className={styles.customCheckbox} 
-              checked={enableTwoFactor} // Bindet den Zustand
-              onChange={(e) => setEnableTwoFactor(e.target.checked)} // Aktualisiert den Zustand
+              checked={enableTwoFactor} 
+              onChange={(e) => setEnableTwoFactor(e.target.checked)}
             />
             Zwei-Faktor-Authentifizierung aktivieren
           </label>
