@@ -1,102 +1,123 @@
-import { useParams, useNavigate } from "react-router-dom"; // 🔹 Import useNavigate
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { io } from "socket.io-client";
 import styles from "./Chat.module.css";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const socket = io(API_BASE_URL, { autoConnect: false });
+
 function Chat() {
-  const { channelId } = useParams();
-  const navigate = useNavigate(); // 🔹 Hook for navigation
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [channelObjectId, setChannelObjectId] = useState(null);
 
+  // ✅ Redirect if Not Logged In
   useEffect(() => {
-    const fetchChannelId = async () => {
-      try {
-        const res = await axios.get(`${VITE_API_BASE_URL}/api/channels/name/${channelId}`);
-        if (res.data._id) {
-          console.log("✅ Found channel ID:", res.data._id);
-          setChannelObjectId(res.data._id);
-        } else {
-          console.error("⚠️ Channel not found!");
-        }
-      } catch (error) {
-        console.error("❌ Error fetching channel ID:", error);
-      }
-    };
-  
-    if (channelId.length !== 24) { 
-      fetchChannelId();
-    } else {
-      setChannelObjectId(channelId);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
     }
-  }, [channelId]);
-  
+  }, [navigate]);
 
+  // ✅ Fetch Messages on Load (Sorted)
   useEffect(() => {
     const fetchMessages = async () => {
-      if (!channelObjectId) {
-        console.error("⚠️ channelObjectId is undefined!");
-        return;
-      }
-      
-      console.log(`🔍 Fetching messages for channel: ${channelObjectId}`);
-      
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:5000/api/messages/${channelObjectId}`, {
+        const requestUrl = `${API_BASE_URL}/api/messages`;
+  
+        console.log("🔍 Fetching messages from:", requestUrl);
+        const res = await axios.get(requestUrl, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setMessages(res.data);
+  
+        console.log("✅ Messages fetched:", res.data);
+  
+        // ✅ Fix: Sort messages to display oldest first
+        const uniqueMessages = Array.from(new Map(res.data.map((msg) => [msg._id, msg])).values())
+          .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  
+        setMessages(uniqueMessages);
       } catch (err) {
         console.error("❌ Error fetching messages:", err.response?.data || err.message);
       }
     };
   
     fetchMessages();
-  }, [channelObjectId]);
+  }, []);
   
+  
+  
+  
+  
+  
+  
+
+  // ✅ Listen for Real-Time Messages
+  useEffect(() => {
+    socket.connect();
+  
+    socket.on("receiveMessage", (message) => {
+      console.log("📨 New real-time message received:", message);
+  
+      setMessages((prevMessages) => {
+        const seenIDs = new Set(prevMessages.map((msg) => msg._id));
+  
+        if (seenIDs.has(message._id)) {
+          console.warn("⚠️ Duplicate received from Socket.io:", message);
+          return prevMessages; // ✅ Ignore duplicates
+        }
+  
+        console.log("✅ Adding new message:", message);
+        return [...prevMessages, message];
+      });
+    });
+  
+    return () => {
+      socket.off("receiveMessage");
+      socket.disconnect();
+    };
+  }, []);
+  
+  
+  
+
+  // ✅ Send Message
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !channelObjectId) return;
-
+    if (!newMessage.trim()) return;
+  
     try {
       const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
-        console.error("User ID is missing!");
-        return;
-      }
-
       const res = await axios.post(
-        "http://localhost:5000/api/messages",
-        { content: newMessage, channel: channelObjectId, author: userId },
+        `${API_BASE_URL}/api/messages`,
+        { content: newMessage },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         }
       );
-
-      setMessages((prevMessages) => [...prevMessages, res.data.messageData]);
+  
+      // ✅ Fix: Only send `content` and `author` to avoid duplicate `_id` errors
+      socket.emit("sendMessage", { content: res.data.content, author: res.data.author });
+  
       setNewMessage("");
     } catch (err) {
-      console.error("Error sending message:", err);
+      console.error("❌ Error sending message:", err);
     }
   };
-
+  
   return (
     <div className={styles.chatContainer}>
       <div className={styles.chatContent}>
-        <button className={styles.friendsButton} onClick={() => navigate("/friends")}>
+        <button className={styles.friendsButton} onClick={() => navigate("/friends/request")}>
           👥 Friends
         </button>
-        
+
         <div className={styles.messageList}>
           {messages.length > 0 ? (
-            messages.map((msg, index) => (
-              <div key={index} className={styles.message}>
+            messages.map((msg) => (
+              <div key={msg._id} className={styles.message}>
                 <span className={styles.author}>{msg.author?.username || "Unknown"}:</span>
                 <span className={styles.content}>{msg.content}</span>
               </div>
@@ -115,9 +136,7 @@ function Chat() {
               placeholder="Type your message..."
               className={styles.inputField}
             />
-            <button type="submit" className={styles.sendButton}>
-              Send
-            </button>
+            <button type="submit" className={styles.sendButton}>Send</button>
           </form>
         </div>
       </div>

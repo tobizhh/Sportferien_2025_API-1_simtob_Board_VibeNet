@@ -1,19 +1,15 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
 
-const requireAuth = async (req, res, next) => {
+const requireAuth = (req, res, next) => {
+  const token = req.header("Authorization")?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Access Denied" });
+
   try {
-    const token = req.header("Authorization")?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "Kein Token, Zugriff verweigert" });
-
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.userId).select("_id username"); // Benutzer abrufen
-
-    if (!req.user) return res.status(401).json({ message: "Ungültiges Token" });
-
+    req.user = { userId: decoded.userId }; // ✅ Ensure correct user ID is set
     next();
-  } catch (error) {
-    res.status(401).json({ message: "Token ist ungültig" });
+  } catch (err) {
+    res.status(401).json({ message: "Invalid Token" });
   }
 };
 

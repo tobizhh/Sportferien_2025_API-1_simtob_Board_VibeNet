@@ -48,7 +48,7 @@ function Login() {
   
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.userId); // ✅ Store userId
-  
+      console.log("✅ Login successful, redirecting...");
       navigate("/chat/firstServer/general"); // ✅ Redirect to chat
     } catch (err) {
       console.error("❌ Fehler bei der Zwei-Faktor-Authentifizierung:", err.response?.data || err.message);

@@ -1,41 +1,83 @@
-require("dotenv").config();
-const cors = require("cors");
-const express = require("express");
-const mongoose = require("mongoose");
+require("dotenv").config()
+const express = require("express")
+const mongoose = require("mongoose")
+const cors = require("cors")
+const { createServer } = require("http")
+const { Server } = require("socket.io")
+const Message = require("./models/Message")
+console.log("📂 Loading routes...")
 
-const userRoutes = require("./routes/users");
-const serverRoutes = require("./routes/servers");
-const channelRoutes = require("./routes/channels");
-const messageRoutes = require("./routes/messages");
-const authRoutes = require("./routes/auth");
-const friendsRoutes = require("./routes/friends");
-const path = require("path");
-require(path.resolve(__dirname, "../Middleware/authMiddleware"));
+const app = express()
+const server = createServer(app)
+const io = new Server(server, { cors: { origin: "*" } })
 
+app.set("io", io)
+app.use(express.json())
+app.use(cors())
 
-
-const app = express();
-app.use(express.json());
-app.use(cors());
-
-// Verbindung zu MongoDB
+// Connect to MongoDB
 mongoose
-  .connect("mongodb+srv://tobi:Saitob06@vibenet.ncfjd.mongodb.net/?retryWrites=true&w=majority&appName=VibeNet")
-  .then(() => console.log("✅ Verbindung zu MongoDB erfolgreich!"))
-  .catch((err) => console.error("❌ Fehler bei der Verbindung zu MongoDB:", err));
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("📊 Connected to MongoDB"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err))
 
-// API-Routen registrieren
-app.use("/api/users", userRoutes);
-app.use("/api/servers", serverRoutes);
-app.use("/api/channels", channelRoutes);
-app.use("/api/messages", messageRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/friends", friendsRoutes);
+// Route Imports
+const authRoutes = require("./routes/auth")
+const messageRoutes = require("./routes/messages")
+const userRoutes = require("./routes/users")
 
+// Register API Routes
+app.use("/api/auth", authRoutes)
+app.use("/api/messages", messageRoutes)
+app.use("/api/users", userRoutes)
 
-app.get("/", (req, res) => {
-  res.send("VibeChat Backend läuft 🚀");
+app.get("/", (req, res) => res.send("🔥 Chat API is running"))
+
+// Log All Registered Routes (Debugging)
+console.log("🛠 Checking registered routes...")
+app._router.stack.forEach((r) => {
+  if (r.route) {
+    console.log(`✅ Route registered: ${r.route.path}`)
+  } else if (r.name === "router" && r.handle.stack) {
+    r.handle.stack.forEach((s) => {
+      if (s.route) {
+        console.log(`✅ Nested route registered: ${s.route.path}`)
+      }
+    })
+  }
+})
+
+// Socket.io Listeners
+io.on("connection", (socket) => {
+  console.log(`🔌 User connected: ${socket.id}`);
+
+  socket.on("sendMessage", async (message) => {
+    console.log("📨 New message received:", message);
+    try {
+      const newMessage = new Message({
+        content: message.content,
+        author: message.author, // ✅ Keep only user ID
+      });
+
+      await newMessage.save();
+      await newMessage.populate("author", "username");
+
+      io.emit("receiveMessage", newMessage);
+      console.log("✅ Message saved & broadcasted via Socket.io");
+    } catch (error) {
+      console.error("❌ Error saving message:", error);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`❌ User disconnected: ${socket.id}`);
+  });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🌍 Server läuft auf Port ${PORT}`));
+
+
+const PORT = process.env.PORT || 5000
+server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
