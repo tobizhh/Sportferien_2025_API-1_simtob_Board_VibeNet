@@ -14,7 +14,7 @@ const cors = require("cors")
 const { createServer } = require("http")
 const { Server } = require("socket.io")
 const Message = require("./models/Message")
-console.log("📂 Loading routes...")
+console.log("📂 Loading routes...") //debug codes
 
 const app = express()
 const server = createServer(app)
@@ -24,7 +24,7 @@ app.set("io", io)
 app.use(express.json())
 app.use(cors())
 
-// Connect to MongoDB
+// connect to mongodb
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -33,19 +33,19 @@ mongoose
   .then(() => console.log("📊 Connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB connection error:", err))
 
-// Route Imports
+// route Imports
 const authRoutes = require("./routes/auth")
 const messageRoutes = require("./routes/messages")
 const userRoutes = require("./routes/users")
 
-// Register API Routes
+// register API Routes
 app.use("/api/auth", authRoutes)
 app.use("/api/messages", messageRoutes)
 app.use("/api/users", userRoutes)
 
 app.get("/", (req, res) => res.send("🔥 Chat API is running"))
 
-// Log All Registered Routes (Debugging)
+// debugging routes
 console.log("🛠 Checking registered routes...")
 app._router.stack.forEach((r) => {
   if (r.route) {
@@ -59,16 +59,16 @@ app._router.stack.forEach((r) => {
   }
 })
 
-// Socket.io Listeners
+// socket.io connections
 io.on("connection", (socket) => {
   console.log(`🔌 User connected: ${socket.id}`);
-
+//get messages
   socket.on("sendMessage", async (message) => {
     console.log("📨 New message received:", message);
     try {
       const newMessage = new Message({
         content: message.content,
-        author: message.author, // ✅ Keep only user ID
+        author: message.author, 
       });
 
       await newMessage.save();
